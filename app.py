@@ -120,7 +120,7 @@ if(st.button("Predict")):
                 font-size: 18px;
                 text-align: center;
                 margin: 10px 0;">
-                🎵 <b>Model Prediction:</b> It's a <span style='color: #FF5733;'><b>{label[result_index]}</b></span> music!
+                🎵 <b>Model Prediction:</b> It's a <span style='color: #872657;'><b>{label[result_index]}</b></span> music!
             </div>
             """,
             unsafe_allow_html=True
