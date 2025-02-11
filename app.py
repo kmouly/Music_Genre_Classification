@@ -61,73 +61,63 @@ def model_prediction(X_test):
     return max_elements[0]
 
 
-
-#sidebar
-st.sidebar.title("Dashboard")
-app_mode = st.sidebar.selectbox("Select Page",["Home","Prediction"])
-
-## Main Page
-if(app_mode=="Home"):
+# Set background image
+def set_bg(image_url):
     st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #181646;  /* Blue background */
-        color: white;
-    }
-    h2, h3 {
-        color: white;
-    }
-    </style>
-    """,
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("{image_url}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Call the function with your image URL
+set_bg("https://thumbs.dreamstime.com/b/beautiful-wallpaper-music-notes-341785800.jpg") 
+# Centered Title
+st.markdown(
+    "<h1 style='text-align: center; color:#FFEF00 ;'>Music Genre Classification System!</h1>", 
     unsafe_allow_html=True
 )
+st.subheader("Welcome to the Music Genre Classification System! 🎶🎧")
 
-    st.markdown(''' ## Welcome to the,\n
-    ## Music Genre Classification System! 🎶🎧''')
-    image_path = "music_genre_home.png"
-    st.image(image_path, use_container_width=True)
-    st.markdown("""
-**Our goal is to help in identifying music genres from audio tracks efficiently. Upload an audio file, and our system will analyze it to detect its genre. Discover the power of AI in music analysis!**
-
-### How It Works
-1. **Upload Audio:** Go to the **Genre Classification** page and upload an audio file.
-2. **Analysis:** Our system will process the audio using advanced algorithms to classify it into one of the predefined genres.
-3. **Results:** View the predicted genre along with related information.
-
-### Why Choose Us?
-- **Accuracy:** Our system leverages state-of-the-art deep learning models for accurate genre prediction.
-- **User-Friendly:** Simple and intuitive interface for a smooth user experience.
-- **Fast and Efficient:** Get results quickly, enabling faster music categorization and exploration.
-
-### Get Started
-Click on the **Genre Classification** page in the sidebar to upload an audio file and explore the magic of our Music Genre Classification System!
-
-### About Us
-Learn more about the project, our team, and our mission on the **About** page.
-""")
-#Prediction Page
-elif(app_mode=="Prediction"):
-    st.header("Model Prediction")
-    test_mp3 = st.file_uploader("Upload an audio file", type=["mp3"])
-    if test_mp3 is not None:
-        filepath = f"Test_Music/{test_mp3.name}"
+test_mp3 = st.file_uploader("Upload an audio file", type=["mp3"])
+if test_mp3 is not None:
+    filepath = f"Test_Music/{test_mp3.name}"
     
-        # Save the file
-        with open(filepath, "wb") as f:
-            f.write(test_mp3.getbuffer())
+    # Save the file
+    with open(filepath, "wb") as f:
+        f.write(test_mp3.getbuffer())
 
-    #Show Button
-    if(st.button("Play Audio")):
-        st.audio(test_mp3)
+#Show Button
+if(st.button("Play Audio")):
+    st.audio(test_mp3)
     
-    #Predict Button
-    if(st.button("Predict")):
-      with st.spinner("Please Wait.."):       
+#Predict Button
+if(st.button("Predict")):
+    with st.spinner("Please Wait.."):       
         X_test = load_and_preprocess_data(filepath)
         result_index = model_prediction(X_test)
         st.balloons()
         label = ['blues', 'classical','country','disco','hiphop','jazz','metal','pop','reggae','rock']
-        st.markdown("**:blue[Model Prediction:] It's a  :red[{}] music**".format(label[result_index]))
-
-       
+    # Styled Success Message for Prediction
+        st.markdown(
+            f"""
+            <div style="
+                background-color: #2196F3;  /* Blue background */
+                padding: 10px; 
+                border-radius: 10px; 
+                color: white; 
+                font-size: 18px;
+                text-align: center;
+                margin: 10px 0;">
+                🎵 <b>Model Prediction:</b> It's a <span style='color: #FF5733;'><b>{label[result_index]}</b></span> music!
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
