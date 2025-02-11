@@ -85,7 +85,7 @@ st.markdown(
     "<h1 style='text-align: center; color:#FFEF00 ;'>Music Genre Classification System</h1>", 
     unsafe_allow_html=True
 )
-st.subheader("Welcome to the Music Genre Classification System! ‧₊˚♪𝄞࿐₊˚⊹")
+st.subheader("Welcome to the Music Genre Classification System! ‧₊˚♪𝄞")
 
 test_mp3 = st.file_uploader("Upload an audio file", type=["mp3", "wav"])
 if test_mp3 is not None:
@@ -113,7 +113,7 @@ if(st.button("Predict")):
         st.markdown(
             f"""
             <div style="
-                background-color: #00FA9A;  /* Blue background */
+                background-color: #7C9D8E;  /* Blue background */
                 padding: 10px; 
                 border-radius: 10px; 
                 color: white; 
