@@ -3,12 +3,19 @@
 ## Overview
 This project is a **Music Genre Classification System** built using **TensorFlow, Streamlit, and Librosa**. The system allows users to upload an audio file, process it, and predict the genre using a deep learning model.
 
+## Deployment Link
+See the demo here: [**Music Genre Classification App**](https://musicgenreclassification-4puwivpqyqdcs9wz4bldsu.streamlit.app/)
+
 ## Features
 - 🎵 **Upload an audio file** in `.mp3` format.
 - 🎤 **Preprocessing**: Converts audio into Mel spectrograms.
 - 🤖 **Deep Learning Model** trained on different music genres.
 - 🎯 **Genre Prediction** using TensorFlow.
 - 🖥️ **Interactive UI** with Streamlit.
+
+## Dataset 
+The dataset used for training the model is the **GTZAN Genre Collection**, sourced from Kaggle: [GTZAN Dataset](https://www.kaggle.com/datasets/andradaolteanu/gtzan-dataset-music-genre-classification). 
+For this project, only the **genres_original** folder was used, which contains 10 genres of audio files.
 
 ## Tech Stack 🛠️
 - **Python** 🐍
