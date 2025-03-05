@@ -48,14 +48,10 @@ def model_prediction(X_test):
     return predicted_index, highest_probability
 
 # Centered Title
-st.markdown(
-    "<h1 style='text-align: center; color:#FFEF00;'>Music Genre Classification System</h1>",
-    unsafe_allow_html=True
-)
-st.subheader("Welcome to the Music Genre Classification System! ‧₊˚♪𝄞")
+st.title("🎵 Music Genre Classifier 🎶")
 
 # Upload file
-st.markdown("<h5 style='color: white;'>📂 Upload an audio file:</h5>", unsafe_allow_html=True)
+st.write("Upload an audio file and click 'Predict Genre' to identify the music genre.")
 test_mp3 = st.file_uploader("", type=["mp3", "wav"])
 
 if test_mp3 is not None:
@@ -65,22 +61,7 @@ if test_mp3 is not None:
     
     with open(filepath, "wb") as f:
         f.write(test_mp3.getbuffer())
-else:
-  st.markdown(
-            f"""
-            <div style="background-color: #FF4C4C; 
-                        padding: 10px; 
-                        border-radius: 10px; 
-                        color: white; 
-                        font-size: 16px;
-                        text-align: center;
-                        margin: 10px 0;">
-                ❌ <b>Error:</b> ⚠️ Please upload an audio file before clicking Predict.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-  
+        
 # Show audio file
 if st.button("🎵 Play Audio"):
     st.audio(test_mp3)
@@ -93,7 +74,7 @@ with col2:
     spinner_placeholder = st.empty()
 
 if predict_button:
-    spinner_placeholder = st.empty()  # Define placeholder for the spinner
+    spinner_placeholder = st.empty() 
     if filepath is None:
         st.markdown(
             f"""
