@@ -62,9 +62,7 @@ if test_mp3 is not None:
     with open(filepath, "wb") as f:
         f.write(test_mp3.getbuffer())
         
-# Show audio file
-if st.button("🎵 Play Audio"):
-    st.audio(test_mp3)
+st.audio(test_mp3)
 
 # Predict button with spinner beside it
 col1, col2 = st.columns([3, 1])
