@@ -87,15 +87,16 @@ st.subheader("Welcome to the Music Genre Classification System! ‧₊˚♪𝄞"
 st.markdown("<h5 style='color: white;'>📂 Upload an audio file:</h5>", unsafe_allow_html=True)
 test_mp3 = st.file_uploader("", type=["mp3", "wav"])
 
-filepath = None  # Initialize file path variable
-
 if test_mp3 is not None:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
         temp_file.write(test_mp3.getbuffer())
-        filepath = temp_file.name  # Use temporary file path
+        filepath = f"Test_Music/{test_mp3.name}"
+    
+    with open(filepath, "wb") as f:
+        f.write(test_mp3.getbuffer())
 
 # Show audio file
-if test_mp3 and st.button("🎵 Play Audio"):
+if st.button("🎵 Play Audio"):
     st.audio(test_mp3)
 
 # Predict button with spinner beside it
@@ -106,7 +107,8 @@ with col2:
     spinner_placeholder = st.empty()
 
 if predict_button:
-    if filepath is None:  # Check if no file is uploaded
+    spinner_placeholder = st.empty()  # Define placeholder for the spinner
+    if filepath is None:
         st.markdown(
             f"""
             <div style="background-color: #FF4C4C; 
@@ -116,15 +118,16 @@ if predict_button:
                         font-size: 16px;
                         text-align: center;
                         margin: 10px 0;">
-                ❌ <b>Error:</b> Please upload an audio file before predicting.
+                ❌ <b>Error:</b> ⚠️ Please upload an audio file before clicking Predict.
             </div>
             """,
             unsafe_allow_html=True
         )
     else:
-        with spinner_placeholder:
-            spinner_placeholder.markdown("⏳ *Processing...*")
-            X_test, error_message = load_and_preprocess_data(filepath)
+        spinner_placeholder.markdown("⏳ *Processing...*")
+
+        # Load and preprocess data
+        X_test, error_message = load_and_preprocess_data(filepath)
 
         if X_test is None:
             spinner_placeholder.empty()
@@ -143,6 +146,7 @@ if predict_button:
                 unsafe_allow_html=True
             )
         else:
+            # Model Prediction
             result_index, highest_probability = model_prediction(X_test)
             spinner_placeholder.empty()
 
