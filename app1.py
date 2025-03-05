@@ -67,7 +67,7 @@ st.audio(test_mp3)
 # Predict button with spinner beside it
 col1, col2 = st.columns([3, 1])
 with col1:
-    predict_button = st.button("🔍 Predict")
+    predict_button = st.button("Predict Genre")
 with col2:
     spinner_placeholder = st.empty()
 
