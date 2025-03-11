@@ -16,7 +16,7 @@ def load_and_preprocess_data(file_path, target_shape=(150, 150)):
     data = []
     try:
         audio_data, sample_rate = librosa.load(file_path, sr=None)
-        
+
         if len(audio_data) == 0:
             return None, "File is corrupted. Please upload a correct file."
 
@@ -50,6 +50,9 @@ def model_prediction(X_test):
 # Centered Title
 st.title("🎵 Music Genre Classifier 🎶")
 
+# Initialize filepath
+filepath = None
+
 # Upload file
 st.write("Upload an audio file and click 'Predict Genre' to identify the music genre.")
 test_mp3 = st.file_uploader("", type=["mp3", "wav"])
@@ -62,7 +65,7 @@ if test_mp3 is not None:
     with open(filepath, "wb") as f:
         f.write(test_mp3.getbuffer())
         
-st.audio(test_mp3)
+    st.audio(filepath)
 
 # Predict button with spinner beside it
 col1, col2 = st.columns([3, 1])
@@ -72,7 +75,6 @@ with col2:
     spinner_placeholder = st.empty()
 
 if predict_button:
-    spinner_placeholder = st.empty() 
     if filepath is None:
         st.markdown(
             f"""
