@@ -38,6 +38,7 @@ def load_and_preprocess_data(file_path, target_shape=(150, 150)):
     except Exception:
         return None, "File is corrupted. Please upload a correct file."
 
+
 # Model Prediction
 def model_prediction(X_test):
     model = load_model()
@@ -45,13 +46,12 @@ def model_prediction(X_test):
     avg_probabilities = np.mean(y_pred, axis=0)  # Average probability of all chunks
     predicted_index = np.argmax(avg_probabilities)
     highest_probability = np.max(avg_probabilities)
+    # Print probabilities in terminal
+    print(avg_probabilities)
     return predicted_index, highest_probability
 
 # Centered Title
 st.title("🎵 Music Genre Classifier 🎶")
-
-# Initialize filepath
-filepath = None
 
 # Upload file
 st.write("Upload an audio file and click 'Predict Genre' to identify the music genre.")
@@ -65,7 +65,7 @@ if test_mp3 is not None:
     with open(filepath, "wb") as f:
         f.write(test_mp3.getbuffer())
         
-    st.audio(filepath)
+st.audio(test_mp3)
 
 # Predict button with spinner beside it
 col1, col2 = st.columns([3, 1])
@@ -75,7 +75,8 @@ with col2:
     spinner_placeholder = st.empty()
 
 if predict_button:
-    if filepath is None:
+    spinner_placeholder = st.empty() 
+    if test_mp3 is None:
         st.markdown(
             f"""
             <div style="background-color: #FF4C4C; 
@@ -92,6 +93,7 @@ if predict_button:
         )
     else:
         spinner_placeholder.markdown("⏳ *Processing...*")
+        print("Predicting Genre")
 
         # Load and preprocess data
         X_test, error_message = load_and_preprocess_data(filepath)
