@@ -4,6 +4,7 @@ import numpy as np
 import librosa
 from tensorflow.image import resize
 import tempfile
+import math
 
 # Function to load model
 @st.cache_resource()
@@ -17,6 +18,11 @@ def load_and_preprocess_data(file_path, target_shape=(150, 150)):
     try:
         audio_data, sample_rate = librosa.load(file_path, sr=None)
 
+        # Check if the audio is silent (all zeros)
+        if np.all(audio_data == 0):
+            return None, "The uploaded file is silent. Please upload a valid audio file."
+
+        # Check if the audio is too short
         if len(audio_data) == 0:
             return None, "File is corrupted. Please upload a correct file."
 
@@ -26,28 +32,36 @@ def load_and_preprocess_data(file_path, target_shape=(150, 150)):
         overlap_samples = overlap_duration * sample_rate
         num_chunks = int(np.ceil((len(audio_data) - chunk_samples) / (chunk_samples - overlap_samples))) + 1
 
+        if num_chunks <= 0:
+            return None, "Audio file is too short to be processed."
+
         for i in range(num_chunks):
             start = i * (chunk_samples - overlap_samples)
             end = start + chunk_samples
             chunk = audio_data[start:end]
+            if len(chunk) < chunk_samples:
+                chunk = np.pad(chunk, (0, chunk_samples - len(chunk)), mode='constant')
             mel_spectrogram = librosa.feature.melspectrogram(y=chunk, sr=sample_rate)
             mel_spectrogram = resize(np.expand_dims(mel_spectrogram, axis=-1), target_shape)
             data.append(mel_spectrogram)
 
         return np.array(data), None
-    except Exception:
-        return None, "File is corrupted. Please upload a correct file."
-
+    except Exception as e:
+        return None, f"File is corrupted. Please upload a correct file. Error: {str(e)}"
 
 # Model Prediction
-def model_prediction(X_test):
+def model_prediction(X_test, confidence_threshold=0.5):
     model = load_model()
+    if X_test.size == 0:
+        return None, 0.0
     y_pred = model.predict(X_test)
     avg_probabilities = np.mean(y_pred, axis=0)  # Average probability of all chunks
     predicted_index = np.argmax(avg_probabilities)
     highest_probability = np.max(avg_probabilities)
-    # Print probabilities in terminal
-    print(avg_probabilities)
+
+    # If confidence is below the threshold, classify as "Other Genre"
+    if highest_probability < confidence_threshold:
+        return "Other Genre", highest_probability
     return predicted_index, highest_probability
 
 # Centered Title
@@ -65,7 +79,7 @@ if test_mp3 is not None:
     with open(filepath, "wb") as f:
         f.write(test_mp3.getbuffer())
         
-st.audio(test_mp3)
+    st.audio(test_mp3)
 
 # Predict button with spinner beside it
 col1, col2 = st.columns([3, 1])
@@ -116,23 +130,58 @@ if predict_button:
             )
         else:
             # Model Prediction
-            result_index, highest_probability = model_prediction(X_test)
+            result_index, highest_probability = model_prediction(X_test, confidence_threshold=0.5)
             spinner_placeholder.empty()
 
-            label = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
-            st.balloons()
-            st.markdown(
-                f"""
-                <div style="background-color: #7C9D8E;  
-                            padding: 10px; 
-                            border-radius: 10px; 
-                            color: white; 
-                            font-size: 18px;
-                            text-align: center;
-                            margin: 10px 0;">
-                    🎵 <b>Model Prediction:</b> It's a <span style='color: #872657;'><b>{label[result_index]}</b></span> music!
-                    <br> 🎼 <b>Confidence Score:</b> {highest_probability:.2f}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            if result_index is not None:
+                label = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
+                
+                # If the result is "Other Genre"
+                if result_index == "Other Genre":
+                    st.markdown(
+                        f"""
+                        <div style="background-color: #7C9D8E;  
+                                    padding: 10px; 
+                                    border-radius: 10px; 
+                                    color: white; 
+                                    font-size: 18px;
+                                    text-align: center;
+                                    margin: 10px 0;">
+                            🎵 <b>Model Prediction:</b> It's an <span style='color: #872657;'><b>Other Genre</b></span>!
+                            <br> 🎼 <b>Confidence Score:</b> {highest_probability:.2f}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.balloons()
+                    st.markdown(
+                        f"""
+                        <div style="background-color: #7C9D8E;  
+                                    padding: 10px; 
+                                    border-radius: 10px; 
+                                    color: white; 
+                                    font-size: 18px;
+                                    text-align: center;
+                                    margin: 10px 0;">
+                            🎵 <b>Model Prediction:</b> It's a <span style='color: #872657;'><b>{label[result_index]}</b></span> music!
+                            <br> 🎼 <b>Confidence Score:</b> {highest_probability:.2f}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+            else:
+                st.markdown(
+                    f"""
+                    <div style="background-color: #FF4C4C; 
+                                padding: 10px; 
+                                border-radius: 10px; 
+                                color: white; 
+                                font-size: 16px;
+                                text-align: center;
+                                margin: 10px 0;">
+                        ❌ <b>Error:</b> Unable to make a prediction. Please try again with a different file.
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
