@@ -50,7 +50,7 @@ def load_and_preprocess_data(file_path, target_shape=(150, 150)):
         return None, f"File is corrupted. Please upload a correct file. Error: {str(e)}"
 
 # Model Prediction
-def model_prediction(X_test, confidence_threshold=0.5):
+def model_prediction(X_test):
     model = load_model()
     if X_test.size == 0:
         return None, 0.0
@@ -58,10 +58,8 @@ def model_prediction(X_test, confidence_threshold=0.5):
     avg_probabilities = np.mean(y_pred, axis=0)  # Average probability of all chunks
     predicted_index = np.argmax(avg_probabilities)
     highest_probability = np.max(avg_probabilities)
-
-    # If confidence is below the threshold, classify as "Other Genre"
-    if highest_probability < confidence_threshold:
-        return "Other Genre", highest_probability
+    # Print probabilities in terminal
+    print(avg_probabilities)
     return predicted_index, highest_probability
 
 # Centered Title
@@ -130,46 +128,27 @@ if predict_button:
             )
         else:
             # Model Prediction
-            result_index, highest_probability = model_prediction(X_test, confidence_threshold=0.5)
+            result_index, highest_probability = model_prediction(X_test)
             spinner_placeholder.empty()
 
             if result_index is not None:
                 label = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
-                
-                # If the result is "Other Genre"
-                if result_index == "Other Genre":
-                    st.markdown(
-                        f"""
-                        <div style="background-color: #7C9D8E;  
-                                    padding: 10px; 
-                                    border-radius: 10px; 
-                                    color: white; 
-                                    font-size: 18px;
-                                    text-align: center;
-                                    margin: 10px 0;">
-                            🎵 <b>Model Prediction:</b> It's an <span style='color: #872657;'><b>Other Genre</b></span>!
-                            <br> 🎼 <b>Confidence Score:</b> {highest_probability:.2f}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.balloons()
-                    st.markdown(
-                        f"""
-                        <div style="background-color: #7C9D8E;  
-                                    padding: 10px; 
-                                    border-radius: 10px; 
-                                    color: white; 
-                                    font-size: 18px;
-                                    text-align: center;
-                                    margin: 10px 0;">
-                            🎵 <b>Model Prediction:</b> It's a <span style='color: #872657;'><b>{label[result_index]}</b></span> music!
-                            <br> 🎼 <b>Confidence Score:</b> {highest_probability:.2f}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                st.balloons()
+                st.markdown(
+                    f"""
+                    <div style="background-color: #7C9D8E;  
+                                padding: 10px; 
+                                border-radius: 10px; 
+                                color: white; 
+                                font-size: 18px;
+                                text-align: center;
+                                margin: 10px 0;">
+                        🎵 <b>Model Prediction:</b> It's a <span style='color: #872657;'><b>{label[result_index]}</b></span> music!
+                        <br> 🎼 <b>Confidence Score:</b> {highest_probability:.2f}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
             else:
                 st.markdown(
                     f"""
