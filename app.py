@@ -82,7 +82,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 st.subheader("Welcome to the Music Genre Classification System! ‧₊˚♪𝄞")
-
+filepath = None 
 # Upload file
 st.markdown("<h5 style='color: white;'>📂 Upload an audio file:</h5>", unsafe_allow_html=True)
 test_mp3 = st.file_uploader("", type=["mp3", "wav"])
@@ -167,3 +167,4 @@ if predict_button:
                 """,
                 unsafe_allow_html=True
             )
+
